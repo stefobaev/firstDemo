@@ -12,11 +12,9 @@ phases:
   pre_build:
     commands:
       - curl -sSL "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" -o terraform.zip
-      - apt install unzip
       - unzip terraform.zip -d /usr/local/bin && chmod +x /usr/local/bin/terraform
       - export REGISTRY_ID=`aws sts get-caller-identity --output text | awk '{print $1}'`
       - export REPO_NAME="${REGISTRY_ID}.dkr.ecr.${REPOSITORY_REGION}.amazonaws.com/${APP_NAME}-${ENV}"
-      - apt install python3-pip
       - pip install jq
       - export SERVICE_ARN=$(aws ecs list-services --cluster ${APP_NAME}-${ENV}-cluster | jq -r .serviceArns[])
       - export TASKDEF_ARN=$(aws ecs describe-services --cluster ${APP_NAME}-${ENV}-cluster --service ${SERVICE_ARN} | jq -r .services[].taskDefinition)
